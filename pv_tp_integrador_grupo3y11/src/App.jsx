@@ -1,4 +1,42 @@
-import { useState } from 'react'
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./views/Login";
+import Dashboard from "./views/Dashboard";
+
+import Header from "./components/layout/Header";
+
+import { useAdmin } from "./context/AdminContext";
+
+function App() {
+   // Se obtiene el estado del administrador desde el contexto global
+  const { admin } = useAdmin();
+   // Verificar si hay un administrador logueado
+  /*let pagina;
+  if (admin) {
+    pagina = <Dashboard />;
+  } else {
+    pagina = <Navigate to="/login" />;
+  }*/
+
+  return (
+    <>
+      <Header />
+      <Routes>
+        {/* Si el administrador ya inició sesión, se redirige al Dashboard */}
+        <Route path="/login" element={admin ? <Navigate to="/" /> : <Login />}/>
+        {/* Ruta protegida: solo permite acceder al Dashboard si existe una sesión */}
+        <Route path="/" element={admin ? <Dashboard /> : <Navigate to="/login" />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;
+
+
+
+
+/*import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -120,3 +158,4 @@ function App() {
 }
 
 export default App
+*/
