@@ -24,12 +24,12 @@ const Login=()=>{
   return (
      <Box
       sx={{
-        height: "100vh",
+        height: "80vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
     }}>
-     <Paper sx={{ padding: 4, width: 350 }}>
+     <Paper sx={{ padding: 3, width: 350 }}>
       <Typography variant="h5" mb={2}>
         Login
       </Typography>

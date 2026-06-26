@@ -4,7 +4,7 @@ import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
 
 import Header from "./components/layout/Header";
-
+import Footer from "./components/layout/Footer";
 import { useAdmin } from "./context/AdminContext";
 
 import ListaClientes from "./views/ListaClientes";
@@ -23,30 +23,25 @@ function App() {
   return (
     <>
       <Header />
-
       <Routes>
-
         <Route
           path="/login"
           element={admin ? <Navigate to="/" /> : <Login />}
         />
-
         <Route
           path="/"
           element={admin ? <Dashboard /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/clientes"
           element={admin ? <ListaClientes /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/clientes/:id"
           element={admin ? <DetalleCliente /> : <Navigate to="/login" />}
         />
-
       </Routes>
+      <Footer></Footer>
     </>
   );
 }

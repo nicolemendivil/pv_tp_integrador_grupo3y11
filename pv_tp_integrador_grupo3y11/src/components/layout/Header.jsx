@@ -1,7 +1,6 @@
 import { Box,Button,Typography } from "@mui/material";
 import { useAdmin }from "../../context/AdminContext";
 import { useNavigate }from "react-router-dom";
-
 const Header = () => {
 // Se obtiene el administrador logueado desde el contexto global
 const { admin, logout } =useAdmin();
