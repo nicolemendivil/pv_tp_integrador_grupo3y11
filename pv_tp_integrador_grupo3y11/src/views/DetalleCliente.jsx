@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAdmin } from "../context/AdminContext";
 import { CircularProgress, Alert } from "@mui/material";
 
-function DetalleCliente() {
+const DetalleCliente = ()=> {
 
     // Obtiene el ID desde la URL (/clientes/:id)
     // Esto permite identificar qué cliente se debe mostrar
