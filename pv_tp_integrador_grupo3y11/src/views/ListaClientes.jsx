@@ -1,166 +1,328 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
+  Card,
+  CardContent,
+  Typography,
   CircularProgress,
   Alert,
   TextField,
   Box,
-  Typography,
+  Button,
+  Chip,
 } from "@mui/material";
-import { Link } from "react-router-dom";
-import FormularioAltaCliente from "../components/common/FormularioAltaCliente";
+import SearchIcon from "@mui/icons-material/Search";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import InputAdornment from "@mui/material/InputAdornment";
 
-const ListaClientes= () => {
+function ListaClientes() {
+
   // Estado donde se almacenan los clientes obtenidos desde la API
   const [clientes, setClientes] = useState([]);
 
-  // Estado para controlar la carga de datos (loading)
+  // Estado que indica si la información se está cargando
   const [loading, setLoading] = useState(true);
 
-  // Estado para manejar errores en la petición HTTP
+  // Estado para almacenar posibles errores
   const [error, setError] = useState(null);
 
-  // Estado para almacenar el texto de búsqueda del usuario
+  // Estado del buscador
   const [busqueda, setBusqueda] = useState("");
 
-  // useEffect se ejecuta una sola vez cuando el componente se monta
+  // Hook para navegar entre rutas
+  const navigate = useNavigate();
+
+  // Se ejecuta una sola vez cuando el componente se monta
   useEffect(() => {
+
     const obtenerClientes = async () => {
+
       try {
-        // Petición a la API externa para obtener usuarios
-        const res = await fetch("https://fakestoreapi.com/users");
+
+        // Petición GET a FakeStoreAPI
+        const respuesta = await fetch(
+          "https://fakestoreapi.com/users"
+        );
 
         // Conversión de la respuesta a JSON
-        const data = await res.json();
+        const datos = await respuesta.json();
 
         // Guardado de los clientes en el estado
-        setClientes(data);
+        setClientes(datos);
+
       } catch (err) {
-        // Manejo de error en caso de falla de la API
-        setError("Error al cargar los clientes");
+
+        // Si ocurre un error se muestra un mensaje
+        setError("Error al cargar los clientes.");
+
       } finally {
-        // Se desactiva el estado de carga sin importar el resultado
+
+        // Finaliza el estado de carga
         setLoading(false);
+
       }
+
     };
 
     obtenerClientes();
+
   }, []);
 
-  // Filtrado dinámico de clientes según búsqueda
-  // Se filtra por apellido o por ciudad
-  const filtrados = clientes.filter((c) => {
-    return (
-      c?.name?.lastname?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      c?.address?.city?.toLowerCase().includes(busqueda.toLowerCase())
-    );
-  });
+  // Filtrado por apellido o ciudad
+  const filtrados = clientes.filter((cliente) =>
 
-  // Mientras se cargan los datos se muestra un spinner
+    cliente.name.lastname
+      .toLowerCase()
+      .includes(busqueda.toLowerCase())
+
+    ||
+
+    cliente.address.city
+      .toLowerCase()
+      .includes(busqueda.toLowerCase())
+
+  );
+
+  // Mientras se cargan los datos
   if (loading) {
+
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 5,
+        }}
+      >
         <CircularProgress />
       </Box>
+
     );
+
   }
 
-  // Si ocurre un error en la API se muestra un mensaje
+  // Si ocurre un error
   if (error) {
-    return <Alert severity="error">{error}</Alert>;
+
+    return (
+
+      <Alert severity="error">
+
+        {error}
+
+      </Alert>
+
+    );
+
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Título principal de la vista */}
-      <Typography variant="h4" mb={2}>
+
+    <Box
+      sx={{
+        maxWidth: 1400,
+        margin: "auto",
+        p: 4,
+      }}
+    >
+
+      {/* Botón para volver al Dashboard */}
+
+      <Button
+        variant="outlined"
+        onClick={() => navigate("/")}
+        sx={{ mb: 3 }}
+      >
+        ← Volver
+      </Button>
+
+      {/* Título */}
+
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: "bold",
+          mb: 3,
+        }}
+      >
         Lista de Clientes
       </Typography>
-      <FormularioAltaCliente />
-      {/* Input de búsqueda para filtrar clientes en tiempo real */}
+
+      {/* Buscador */}
+
       <TextField
-        label="Buscar por apellido o ciudad"
-        variant="outlined"
         fullWidth
-        sx={{ mb: 2 }}
+        label="Buscar por apellido o ciudad"
+        value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
+        sx={{ mb: 4 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
 
-      {/* Contenedor de la tabla con diseño de Material UI */}
-      <TableContainer component={Paper}>
-        <Table>
-          {/* Encabezado de la tabla */}
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <b>ID</b>
-              </TableCell>
-              <TableCell>
-                <b>Nombre Completo</b>
-              </TableCell>
-              <TableCell>
-                <b>Email</b>
-              </TableCell>
-              <TableCell>
-                <b>Teléfono</b>
-              </TableCell>
-              <TableCell>
-                <b>Ciudad</b>
-              </TableCell>
-              <TableCell>
-                <b>Acciones</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
+      {/* Contenedor de las tarjetas */}
 
-          {/* Cuerpo de la tabla donde se renderizan los clientes */}
-          <TableBody>
-            {/* Se recorre el array filtrado para mostrar cada cliente */}
-            {filtrados.map((c) => (
-              <TableRow key={c.id}>
-                {/* ID del cliente */}
-                <TableCell>{c.id}</TableCell>
+      <Box
+        sx={{
+          display: "grid",
 
-                {/* Nombre completo del cliente */}
-                <TableCell>
-                  {c.name.firstname} {c.name.lastname}
-                </TableCell>
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2,1fr)",
+            lg: "repeat(4,1fr)",
+          },
 
-                {/* Email del cliente */}
-                <TableCell>{c.email}</TableCell>
+          gap: 3,
+        }}
+      >
+        {filtrados.map((cliente) => (
 
-                {/* Teléfono del cliente */}
-                <TableCell>{c.phone}</TableCell>
+          <Card
+            key={cliente.id}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: 270,
+              borderRadius: 3,
+              overflow: "hidden",
+              boxShadow: 3,
+              transition: "0.25s",
 
-                {/* Ciudad del cliente */}
-                <TableCell>{c.address.city}</TableCell>
+              "&:hover": {
+                transform: "translateY(-6px)",
+                boxShadow: 8,
+              },
+            }}
+          >
 
-                {/* Enlace a la vista de detalle del cliente */}
-                <TableCell>
-                  <Link
-                    to={`/clientes/${c.id}`}
-                    style={{
-                      textDecoration: "none",
-                      color: "#1976d2",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Ver detalle
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            {/* Encabezado */}
+
+            <Box
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                px: 2,
+                py: 1.5,
+              }}
+            >
+
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: "bold",
+                  textTransform: "capitalize",
+                }}
+              >
+                {cliente.name.firstname} {cliente.name.lastname}
+              </Typography>
+
+            </Box>
+
+            {/* Información */}
+
+            <CardContent
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                flexGrow: 1,
+              }}
+            >
+
+              <Chip
+                label="Cliente activo"
+                color="primary"
+                size="small"
+                sx={{
+                  width: "fit-content",
+                  mb: 2,
+                }}
+              />
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1,
+                }}
+              >
+                <EmailIcon fontSize="small" color="primary" />
+
+                <Typography variant="body2">
+                  <strong>Email:</strong> {cliente.email}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1,
+                }}
+              >
+                <PhoneIcon fontSize="small" color="primary" />
+
+                <Typography variant="body2">
+                  <strong>Teléfono:</strong> {cliente.phone}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <LocationOnIcon fontSize="small" color="primary" />
+
+                <Typography variant="body2">
+                  <strong>Ciudad:</strong> {cliente.address.city}
+                </Typography>
+              </Box>
+
+              {/* Empuja el botón hacia abajo */}
+
+              <Box sx={{ flexGrow: 1 }} />
+
+              <Button
+                component={Link}
+                to={`/clientes/${cliente.id}`}
+                variant="contained"
+                fullWidth
+                sx={{
+                  mt: 2,
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                }}
+              >
+                Ver detalle
+              </Button>
+
+            </CardContent>
+
+          </Card>
+
+        ))}
+
+      </Box>
+
     </Box>
+
   );
+
 }
 
 export default ListaClientes;
