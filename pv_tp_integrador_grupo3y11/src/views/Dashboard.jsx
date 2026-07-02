@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Paper, Typography, Box, Button,Grid } from "@mui/material";
+import { Paper, Typography, Box, Button,Card } from "@mui/material";
 import { useAdmin } from "../context/AdminContext";
 
 import PeopleIcon from "@mui/icons-material/People";
@@ -17,56 +17,53 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
-       <Box sx={{ p:4 ,
-        backgroundColor:"#90caf9"
-       }}>
-      
-      {/* Banner */}
+        <Box sx={{ p: { xs: 2, md: 4 }, backgroundColor: "#90caf9" }}>
 
-      <Paper
-        sx={{
-          overflow:"hidden",
-          borderRadius:3,
-          mb:4
-        }}
-      >
+      {/* iamgen de fondo*/}
+      <Paper sx={{ overflow: "hidden", borderRadius: 3, mb: 4 }}>
 
         <Box
           component="img"
           src={banner}
           sx={{
-            width:"100%",
-            height:260,
-            objectFit:"cover"
+            width: "100%",
+            height: { xs: 160, sm: 220, md: 260 },
+            objectFit: "cover",
           }}
         />
+
+        {/* bienvenida */}
         <Paper
-  sx={{
-    p: 3,
-    mb: 4,
-    borderRadius: 3,
-    backgroundColor: "#e3f2fd",
-  }}
->
-  <Typography variant="h4" color="primary" fontWeight="bold">
-    ¡Bienvenido, {admin.nombre}!
-  </Typography>
-
-  <Typography sx={{ mt: 1 }}>
-    Has iniciado sesión como <b>{admin.sector}</b>.
-  </Typography>
-
-  <Typography color="text.secondary" sx={{ mt: 2 }}>
-    Desde este panel podrás administrar los clientes registrados,
-    consultar su información y acceder a las diferentes funciones del
-    sistema.
-  </Typography>
-</Paper>
-
-        <Box sx={{p:3}}>
-
+          sx={{
+            p: 3,
+            mb: 3,
+            borderRadius: 3,
+            backgroundColor: "#e3f2fd",
+          }}
+        >
           <Typography
             variant="h4"
+            sx={{ fontSize: { xs: 22, sm: 30, md: 40 } }}
+            color="primary"
+            fontWeight="bold"
+          >
+            ¡Bienvenido, {admin.nombre}!
+          </Typography>
+
+          <Typography sx={{ mt: 1 }}>
+            Has iniciado sesión como <b>{admin.sector}</b>.
+          </Typography>
+
+          <Typography color="text.secondary" sx={{ mt: 2 }}>
+            Desde este panel podrás administrar clientes, consultar información y gestionar el sistema.
+          </Typography>
+        </Paper>
+
+        {/* TITULO */}
+        <Box sx={{ p: 3 }}>
+          <Typography
+            variant="h4"
+            sx={{ fontSize: { xs: 22, sm: 30, md: 40 } }}
             color="primary"
             fontWeight="bold"
           >
@@ -74,95 +71,86 @@ const Dashboard = () => {
           </Typography>
 
           <Typography color="text.secondary">
-            Sistema de Gestión de Clientes utilizando FakeStore API.
+            Sistema de Gestión de Clientes con FakeStore API.
           </Typography>
-
         </Box>
 
       </Paper>
 
-      {/* Cards */}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+      {/* card*/}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: 3,
+          maxWidth: 1100,
+          mx: "auto",
+        }}
+      >
 
-      <Grid container spacing={3}  sx={{ maxWidth: 1100 }}>
-        
-        <Grid item xs={12} md={4}>
-
-          <Paper 
+        {/* clientes  */}
+        <Card
           onClick={() => navigate("/clientes")}
-          sx={{p:3,textAlign:"center"}}>
-             
-            <PeopleIcon
-              sx={{
-                fontSize:50,
-                color:"#1976d2"
-              }}
-            />
+          sx={{
+            width: { xs: "100%", sm: "45%", md: "30%" },
+            p: 3,
+            textAlign: "center",
+            cursor: "pointer",
+            borderRadius: 3,
+            boxShadow: 3,
+            transition: "0.25s",
+            "&:hover": {
+              transform: "translateY(-6px)",
+              boxShadow: 8,
+            },
+          }}
+        >
+          <PeopleIcon sx={{ fontSize: 50, color: "#1976d2" }} />
+          <Typography variant="h6">Clientes</Typography>
+          <Typography>Administración completa</Typography>
+        </Card>
 
-            <Typography variant="h6">
-              Clientes
-            </Typography>
+        {/* admin */}
+        <Card
+          sx={{
+            width: { xs: "100%", sm: "45%", md: "30%" },
+            p: 3,
+            textAlign: "center",
+            borderRadius: 3,
+            boxShadow: 3,
+          }}
+        >
+          <AdminPanelSettingsIcon sx={{ fontSize: 50, color: "#1976d2" }} />
+          <Typography variant="h6">Administrador</Typography>
+          <Typography>{admin?.nombre}</Typography>
+        </Card>
 
-            <Typography>
-              Administración completa
-            </Typography>
+        {/* api */}
+        <Card
+          onClick={() => window.open("https://fakestoreapi.com/", "_blank")}
+          sx={{
+            width: { xs: "100%", sm: "45%", md: "30%" },
+            p: 3,
+            textAlign: "center",
+            cursor: "pointer",
+            borderRadius: 3,
+            boxShadow: 3,
+            transition: "0.25s",
+            "&:hover": {
+              transform: "translateY(-6px)",
+              boxShadow: 8,
+            },
+          }}
+        >
+          <CloudDoneIcon sx={{ fontSize: 50, color: "#1976d2" }} />
+          <Typography variant="h6">API</Typography>
+          <Typography>FakeStore Conectada</Typography>
+        </Card>
 
-          </Paper>
-
-        </Grid>
-
-        <Grid item xs={12} md={4} >
-
-          <Paper sx={{p:3,textAlign:"center"}}>
-
-            <AdminPanelSettingsIcon
-              sx={{
-                fontSize:50,
-                color:"#1976d2"
-              }}
-            />
-
-            <Typography variant="h6">
-              Administrador
-            </Typography>
-
-            <Typography>
-              {admin?.nombre}
-            </Typography>
-
-          </Paper>
-
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-
-          <Paper onClick={() => window.open("https://fakestoreapi.com/", "_blank")} sx={{p:3,textAlign:"center"}}>
-            
-            <CloudDoneIcon
-              sx={{
-                fontSize:50,
-                color:"#1976d2"
-              }}
-            />
-
-            <Typography variant="h6">
-              API
-            </Typography>
-
-            <Typography>
-              FakeStore Conectada
-            </Typography>
-
-          </Paper>
-
-        </Grid>
-
-      </Grid>
       </Box>
     </Box>
-
   );
-
 };
     
 export default Dashboard;
