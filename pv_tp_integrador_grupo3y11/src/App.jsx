@@ -9,6 +9,7 @@ import { useAdmin } from "./context/AdminContext";
 
 import ListaClientes from "./views/ListaClientes";
 import DetalleCliente from "./views/DetalleCliente";
+import FormularioAltaClientes from "./components/common/FormularioAltaCliente";
 
 function App() {
   // Se obtiene el estado del administrador desde el contexto global
@@ -39,6 +40,10 @@ function App() {
         <Route
           path="/clientes/:id"
           element={admin ? <DetalleCliente /> : <Navigate to="/login" />}
+        />
+         <Route
+          path="/alta"
+          element={admin ? <FormularioAltaClientes /> : <Navigate to="/login" />}
         />
       </Routes>
       <Footer></Footer>
