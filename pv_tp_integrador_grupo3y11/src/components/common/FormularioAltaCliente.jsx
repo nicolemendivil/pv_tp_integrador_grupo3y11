@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import {TextField, Button, Box,Typography,Alert,Snackbar,} from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Alert,
+  Snackbar,
+  Paper
+} from "@mui/material";
 
 const FormAltaCliente = () => {
   const [nombre, setNombre] = useState("");
@@ -13,9 +22,13 @@ const FormAltaCliente = () => {
   const [numero, setNumero] = useState("");
   const [codigoPostal, setCodigoPostal] = useState("");
 
+  // Hook para navegar entre rutas
+  const navigate = useNavigate();
+
   // Estados para el cartel flotante
   const [mostrarCartel, setMostrarCartel] = useState(false);
   const [mensajeCartel, setMensajeCartel] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState("success");
 
   //Función que se ejecuta al enviar el formulario
   const manejarEnvio = async (e) => {
@@ -42,19 +55,39 @@ const FormAltaCliente = () => {
       phone: telefono,
     };
     try {
-      // Envia el objeto por POST a la API de prueba
+      // 1. Envia el objeto por POST a la API de prueba
       const respuesta = await fetch("https://fakestoreapi.com/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoCliente),
       });
 
-      const datosServidor = await respuesta.json();
+      //Agregar el cliente en la lista de clientes
+    //2. Trae lo que ya está guardado en localStorage o creamos un array vacío si no hay nada
+      const clientesLocales = JSON.parse(localStorage.getItem("clientes")) || [];
 
-      // Muestra el cartel de éxito con el ID que paso la API
-      setMensajeCartel(
-        "Cliente registrado con éxito. ID asignado: " + datosServidor.id,
-      );
+      //3. CÁLCULO SEGURO DEL ID DINÁMICO:
+      // Si la lista tiene clientes, busca el ID más alto existente y le suma 1.
+      // Si por alguna razón la lista estuviera vacía, arranca en 11 por defecto.
+      const proximoId = clientesLocales.length > 0 
+        ? Math.max(...clientesLocales.map(c => c.id)) + 1 
+        : 11;
+
+      //4. Arma el cliente completo incluyendo nuestro ID único calculado
+      const clienteCreadoCompleto = {
+        ...nuevoCliente,
+        id: proximoId, 
+      };
+
+      //5. Agrega el nuevo cliente al principio de la lista
+      const listaActualizada = [clienteCreadoCompleto, ...clientesLocales];
+      
+      //6. Guarda la lista actualizada de vuelta en el localStorage
+      localStorage.setItem("clientes", JSON.stringify(listaActualizada));
+
+      //7. Muestra el cartel de éxito con el ID que paso la API
+      setTipoMensaje("success");
+      setMensajeCartel("Cliente registrado con éxito. ID asignado: " + proximoId);
       setMostrarCartel(true);
 
       // Limpia todos los campos del formulario
@@ -68,20 +101,33 @@ const FormAltaCliente = () => {
       setCalle("");
       setNumero("");
       setCodigoPostal("");
+
+      //Redirige automáticamente a la pantalla de la tabla
+      setTimeout(() => {
+        navigate("/clientes");
+      }, 1500);
     } catch (error) {
+      setTipoMensaje("error");
       setMensajeCartel("Error al conectar con el servidor remoto.");
       setMostrarCartel(true);
     }
   };
   return (
-    <Box
+    <Box sx={{ maxWidth: 1000, margin: "auto", p: 4 }}>
+    <Button
+        variant="outlined"
+        onClick={() => navigate("/clientes")}
+        sx={{ mb: 3 }}
+      >
+        ← Volver
+      </Button>
+    <Paper 
       component="form"
       onSubmit={manejarEnvio}
+      elevation={3}
       sx={{
-        p: 3,
-        border: "1px solid #ccc",
-        borderRadius: 2,
-        mb: 4,
+        p: 4,
+        borderRadius: 3,
         bgcolor: "#f9f9f9",
       }}
     >
@@ -136,7 +182,10 @@ const FormAltaCliente = () => {
       </Box>
 
       <Typography
-        variant="subtitle1" color="textSecondary" sx={{ mb: 1, mt: 2 }}> 
+        variant="subtitle1"
+        color="textSecondary"
+        sx={{ mb: 1, mt: 2 }}
+      >
         Credenciales de Acceso:
       </Typography>
       <Box sx={{ display: "flex", gap: 2 }}>
@@ -159,7 +208,11 @@ const FormAltaCliente = () => {
         />
       </Box>
 
-      <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 1, mt: 2 }}>
+      <Typography
+        variant="subtitle1"
+        color="textSecondary"
+        sx={{ mb: 1, mt: 2 }}
+      >
         Dirección Completa:
       </Typography>
       <Box sx={{ display: "flex", gap: 2 }}>
@@ -183,7 +236,6 @@ const FormAltaCliente = () => {
       <Box sx={{ display: "flex", gap: 2 }}>
         <TextField
           label="Número"
-          type="number"
           fullWidth
           required
           value={numero}
@@ -199,12 +251,11 @@ const FormAltaCliente = () => {
           sx={{ mb: 3 }}
         />
       </Box>
-      <Button
-        type="submit"
-        variant="contained"
-        color="success"
-        size="medium"
-      > Guardar Cliente</Button>
+      <Button type="submit" variant="contained" color="success" size="medium">
+        {" "}
+        Guardar Cliente
+      </Button>
+      </Paper>
       <Snackbar
         open={mostrarCartel}
         autoHideDuration={4000}
@@ -213,7 +264,7 @@ const FormAltaCliente = () => {
       >
         <Alert
           variant="filled"
-          severity="success"
+          severity={tipoMensaje}
           onClose={() => setMostrarCartel(false)}
         >
           {mensajeCartel}
