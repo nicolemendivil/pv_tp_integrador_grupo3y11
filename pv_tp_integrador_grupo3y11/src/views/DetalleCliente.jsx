@@ -39,31 +39,31 @@ function DetalleCliente() {
     useEffect(() => {
 
         const obtenerCliente = async () => {
-
             try {
-
-                const respuesta = await fetch(
-                    `https://fakestoreapi.com/users/${id}`
+                //Primero revisa si el cliente está en nuestra copia local del localStorage
+                const clientesLocales = JSON.parse(localStorage.getItem("clientes")) || [];
+                const clienteEncontradoLocal = clientesLocales.find(
+                    (c) => c.id === Number(id)
                 );
 
-                const datos = await respuesta.json();
-
-                setCliente(datos);
-
-            } catch (err) {
-
+                if (clienteEncontradoLocal) {
+                    //Si lo encuentra acá (como tu nuevo cliente ID 11), usa estos datos y no llama a internet
+                    setCliente(clienteEncontradoLocal);
+                } else {
+                    //Si no está localmente, va a buscarlo a la API original de internet
+                    const respuesta = await fetch(
+                        `https://fakestoreapi.com/users/${id}`
+                     );
+                    const datos = await respuesta.json();
+                    setCliente(datos);
+                }
+            }catch (err) {
                 setError("Error al cargar el cliente");
-
             } finally {
-
                 setLoading(false);
-
             }
-
         };
-
         obtenerCliente();
-
     }, [id]);
 
     // Simulación de eliminación del cliente
