@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Box } from "@mui/material";
 
 import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
@@ -22,32 +23,48 @@ function App() {
     pagina = <Navigate to="/login" />;
   }*/
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
-      <Routes>
-        <Route
-          path="/login"
-          element={admin ? <Navigate to="/" /> : <Login />}
-        />
-        <Route
-          path="/"
-          element={admin ? <Dashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/clientes"
-          element={admin ? <ListaClientes /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/clientes/:id"
-          element={admin ? <DetalleCliente /> : <Navigate to="/login" />}
-        />
-         <Route
-          path="/alta"
-          element={admin ? <FormularioAltaClientes /> : <Navigate to="/login" />}
-        />
-      </Routes>
-      <Footer></Footer>
-    </>
+
+      <Box sx={{ flexGrow: 1 }}>
+        <Routes>
+
+          <Route
+            path="/login"
+            element={admin ? <Navigate to="/" /> : <Login />}
+          />
+
+          <Route
+            path="/"
+            element={admin ? <Dashboard /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/clientes"
+            element={admin ? <ListaClientes /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/clientes/:id"
+            element={admin ? <DetalleCliente /> : <Navigate to="/login" />}
+          />
+
+          <Route
+            path="/alta"
+            element={admin ? <FormularioAltaClientes /> : <Navigate to="/login" />}
+          />
+
+        </Routes>
+      </Box>
+
+      <Footer />
+    </Box>
   );
 }
 

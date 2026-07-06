@@ -8,6 +8,7 @@ import {
     Typography,
     CircularProgress,
     Alert,
+    Snackbar,
     Box,
     Button,
     Divider,
@@ -29,6 +30,11 @@ function DetalleCliente() {
     const [cliente, setCliente] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Estados para el Snackbar
+    const [mostrarCartel, setMostrarCartel] = useState(false);
+    const [mensajeCartel, setMensajeCartel] = useState("");
+    const [tipoMensaje, setTipoMensaje] = useState("success");
 
     useEffect(() => {
 
@@ -53,11 +59,73 @@ function DetalleCliente() {
                 setLoading(false);
 
             }
+
         };
 
         obtenerCliente();
 
     }, [id]);
+
+    // Simulación de eliminación del cliente
+    const eliminarCliente = async () => {
+
+        const confirmar = window.confirm(
+            "¿Está seguro de que desea eliminar este cliente?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+
+            const respuesta = await fetch(
+                `https://fakestoreapi.com/users/${id}`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            if (respuesta.ok) {
+
+                // Elimina el cliente de la copia local
+                const clientesLocales =
+                    JSON.parse(localStorage.getItem("clientes")) || [];
+
+                const nuevaLista = clientesLocales.filter(
+                    (c) => c.id !== Number(id)
+                );
+
+                localStorage.setItem(
+                    "clientes",
+                    JSON.stringify(nuevaLista)
+                );
+
+                setTipoMensaje("success");
+                setMensajeCartel("Cliente eliminado correctamente.");
+                setMostrarCartel(true);
+
+                setTimeout(() => {
+                    navigate("/clientes");
+                }, 1500);
+
+            } else {
+
+                setTipoMensaje("error");
+                setMensajeCartel("No fue posible eliminar el cliente.");
+                setMostrarCartel(true);
+
+            }
+
+        } catch (error) {
+
+            setTipoMensaje("error");
+            setMensajeCartel("Error al eliminar el cliente.");
+            setMostrarCartel(true);
+
+        }
+
+    };
 
     if (loading) {
         return (
@@ -135,100 +203,54 @@ function DetalleCliente() {
                     <Stack spacing={2}>
 
                         <Typography>
-                            <EmailIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <EmailIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Email:</strong> {cliente.email}
                         </Typography>
 
                         <Typography>
-                            <PhoneIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <PhoneIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Teléfono:</strong> {cliente.phone}
                         </Typography>
 
                         <Divider />
 
-                        <Typography
-                            variant="h6"
-                            fontWeight="bold"
-                        >
+                        <Typography variant="h6" fontWeight="bold">
                             Dirección
                         </Typography>
 
                         <Typography>
-                            <LocationOnIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <LocationOnIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Calle:</strong> {cliente.address.street}
                         </Typography>
 
                         <Typography>
-                            <LocationOnIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <LocationOnIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Número:</strong> {cliente.address.number}
                         </Typography>
 
                         <Typography>
-                            <LocationOnIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <LocationOnIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Ciudad:</strong> {cliente.address.city}
                         </Typography>
 
                         <Typography>
-                            <LocationOnIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <LocationOnIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Código Postal:</strong> {cliente.address.zipcode}
                         </Typography>
 
                         <Divider />
 
-                        <Typography
-                            variant="h6"
-                            fontWeight="bold"
-                        >
+                        <Typography variant="h6" fontWeight="bold">
                             Credenciales
                         </Typography>
 
                         <Typography>
-                            <PersonIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <PersonIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Usuario:</strong> {cliente.username}
                         </Typography>
 
                         <Typography>
-                            <KeyIcon
-                                sx={{
-                                    verticalAlign: "middle",
-                                    mr: 1,
-                                }}
-                            />
+                            <KeyIcon sx={{ verticalAlign: "middle", mr: 1 }} />
                             <strong>Password:</strong> {cliente.password}
                         </Typography>
 
@@ -240,8 +262,9 @@ function DetalleCliente() {
                                 color="error"
                                 size="large"
                                 fullWidth
+                                onClick={eliminarCliente}
                             >
-                                Eliminar Cliente (simulado)
+                                Eliminar Cliente
                             </Button>
                         )}
 
@@ -256,6 +279,24 @@ function DetalleCliente() {
                 </CardContent>
 
             </Card>
+
+            <Snackbar
+                open={mostrarCartel}
+                autoHideDuration={3000}
+                onClose={() => setMostrarCartel(false)}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                }}
+            >
+                <Alert
+                    severity={tipoMensaje}
+                    variant="filled"
+                    onClose={() => setMostrarCartel(false)}
+                >
+                    {mensajeCartel}
+                </Alert>
+            </Snackbar>
 
         </Container>
     );

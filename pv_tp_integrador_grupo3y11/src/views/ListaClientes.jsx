@@ -34,39 +34,45 @@ function ListaClientes() {
   // Hook para navegar entre rutas
   const navigate = useNavigate();
 
-  // Se ejecuta una sola vez cuando el componente se monta
   useEffect(() => {
 
-    const obtenerClientes = async () => {
+    const clientesGuardados = localStorage.getItem("clientes");
 
-      try {
+    if (clientesGuardados) {
 
-        // Petición GET a FakeStoreAPI
-        const respuesta = await fetch(
-          "https://fakestoreapi.com/users"
-        );
+      setClientes(JSON.parse(clientesGuardados));
+      setLoading(false);
 
-        // Conversión de la respuesta a JSON
-        const datos = await respuesta.json();
+    } else {
 
-        // Guardado de los clientes en el estado
-        setClientes(datos);
+      const obtenerClientes = async () => {
 
-      } catch (err) {
+        try {
 
-        // Si ocurre un error se muestra un mensaje
-        setError("Error al cargar los clientes.");
+          const res = await fetch("https://fakestoreapi.com/users");
+          const data = await res.json();
 
-      } finally {
+          setClientes(data);
 
-        // Finaliza el estado de carga
-        setLoading(false);
+          // Guarda una copia local
+          localStorage.setItem(
+            "clientes",
+            JSON.stringify(data)
+          );
 
-      }
+        } catch (err) {
 
-    };
+          setError("Error al cargar los clientes");
 
-    obtenerClientes();
+        } finally {
+
+          setLoading(false);
+
+        }
+      };
+
+      obtenerClientes();
+    }
 
   }, []);
 
