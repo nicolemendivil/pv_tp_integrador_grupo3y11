@@ -27,14 +27,14 @@ const Nav = () => {
       >
         Dashboard
       </Button>
-       
+       {/*
       <Button
        color="inherit"
        startIcon={<PersonAddIcon />}
        onClick={() => navigate("/alta")}
        > 
        Alta Cliente
-      </Button>
+      </Button>*/}
 
       <Button
         color="inherit"
