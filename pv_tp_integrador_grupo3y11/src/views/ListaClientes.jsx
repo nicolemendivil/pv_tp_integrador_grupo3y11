@@ -16,6 +16,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import InputAdornment from "@mui/material/InputAdornment";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 function ListaClientes() {
 
@@ -144,7 +145,19 @@ function ListaClientes() {
       >
         ← Volver
       </Button>
-
+      {/*alta del cliente*/}
+       <Button
+         variant="contained"
+         startIcon={<PersonAddIcon />}
+         onClick={() => navigate("/alta")}
+          sx={{
+          display: "flex",
+          ml: "auto",
+          mb: 2,
+          }}
+        >
+         Alta Cliente
+       </Button>
       {/* Título */}
 
       <Typography
@@ -156,7 +169,7 @@ function ListaClientes() {
       >
         Lista de Clientes
       </Typography>
-
+      
       {/* Buscador */}
 
       <TextField
